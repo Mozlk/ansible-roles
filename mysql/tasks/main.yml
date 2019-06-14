@@ -58,7 +58,7 @@
     - 127.0.0.1
     - ::1
     - localhost
-  
+  when: (mysqlver == '5.5') or (mysqlver == '5.6')
 
 
 
