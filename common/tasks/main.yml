@@ -49,7 +49,7 @@
   - name: Configuration unattended-upgrades
     copy: src=20auto-upgrades dest=/etc/apt/apt.conf.d/
   
-    when: ansible_distribution == 'Ubuntu'
+  when: ansible_distribution == 'Ubuntu'
 
 
 - name: Create swap Space
