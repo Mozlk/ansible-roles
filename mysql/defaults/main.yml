@@ -1,3 +1,4 @@
-mysqlver: 57        # 默认版本 55 56 57 
+mysqlver: 5.6       # 默认版本 5.5 5.6 5.7 8.0
+mysqlcluster_version: 7.6   # 7.5 7.6 8.0
 mysql_password: 123456 # mysql 默认密码
 remote: no  # 是否开启远程

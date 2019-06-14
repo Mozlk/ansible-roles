@@ -1,14 +1,17 @@
 ---
 
-- name: Import MySQL GPG Key
-  copy: src=RPM-GPG-KEY-mysql dest=/etc/pki/rpm-gpg/
+- name: Install MySQL official Repo
+  yum: name=https://dev.mysql.com/get/mysql57-community-release-el7-11.noarch.rpm state=latest
 
-- name: Import MySQL Repo
-  template: src=mysql-community.repo.jinja2 dest=/etc/yum.repos.d/
+- name: Disable Defaule Version
+  command: yum-config-manager --disable mysql57-community
+
+- name: Enable MySQL{{ mysqlver }} version
+  command: yum-config-manager --enable mysql{{ mysqlver }}-community
+
 
 - name: Install MySQL{{ mysqlver }}
   yum: name=mysql-community-server state=latest
-
 
 - name: Create Databases Directory
   file:
@@ -16,7 +19,12 @@
     state: directory
     owner: mysql
     group: mysql
+
+- name: Get MySQL Version
+  command: mysql -V
+  register: mysql_version
   
+
 - name: Copy MySQL{{mysqlver}} Configuration
   template: src=my.cnf.jinja2 dest=/etc/my.cnf
   notify: restart MySQL
@@ -29,24 +37,26 @@
     path: /etc/my.cnf
     regexp: '#validate_password = off'
     line: 'validate_password = off'
-  when: (mysqlver == '5.7') or (mysqlver == '8.0')
+  when: (mysql_version.stdout.find('5.7') != -1) or (mysql_version.stdout.find('8.0') != -1)
 
 - name: Restart MySQL{{mysqlver}} Service
   service: name=mysqld state=restarted enabled=yes
-  when: (mysqlver == '5.7') or (mysqlver == '8.0')
+  when: (mysql_version.stdout.find('5.7') != -1) or (mysql_version.stdout.find('8.0') != -1)
 
  
 - name: Get temporary MySQL57+ root password
   shell: grep 'A temporary password is generated for root@localhost:' /var/log/messages | awk '{print $NF}'
   register: mysql_root_temp_password
-  when: (mysqlver == '5.7') or (mysqlver == '8.0')
+  when: (mysql_version.stdout.find('5.7') != -1) or (mysql_version.stdout.find('8.0') != -1)
 
+
+# - name: Set MySQL57+ Password policy 
+#   command: mysql -uroot --password="{{ mysql_root_temp_password.stdout }}" --connect-expired-password -e "set global validate_password_policy=0;set global validate_password_length=4;"
+#   when: (mysql_version.stdout.find('5.7') != -1) or (mysql_version.stdout.find('8.0') != -1)
 
 - name: Change MySQL57+ root user password 
   shell: mysqladmin -u root --password="{{ mysql_root_temp_password.stdout }}" password "{{mysql_password}}"
-  when: (mysqlver == '5.7') or (mysqlver == '8.0')
-
-
+  when: (mysql_version.stdout.find('5.7') != -1) or (mysql_version.stdout.find('8.0') != -1)
 
 
 - name: Change MySQL{{ mysqlver }} root user password 
@@ -58,8 +68,7 @@
     - 127.0.0.1
     - ::1
     - localhost
-  when: (mysqlver == '5.5') or (mysqlver == '5.6')
-
+  when: (mysql_version.stdout.find('5.5') != -1) or (mysql_version.stdout.find('5.6') != -1)
 
 
 - name: Removes all anyelse user accounts
@@ -114,7 +123,7 @@
 
 - name: Databases Random Password
   copy: 
-    src: init-5.7.sh
+    src: init-57.sh
     dest: /root/init.sh
     mode: 0750
   when: (mysql_version.stdout.find('5.7') != -1) or (mysql_version.stdout.find('8.0') != -1)
@@ -122,7 +131,7 @@
 
 - name: Databases Random Password
   copy: 
-    src: init-5.6.sh
+    src: init-56.sh
     dest: /root/init.sh
     mode: 0750
   when: (mysql_version.stdout.find('5.5') != -1) or (mysql_version.stdout.find('5.6') != -1)
