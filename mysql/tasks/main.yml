@@ -4,7 +4,7 @@
   copy: src=RPM-GPG-KEY-mysql dest=/etc/pki/rpm-gpg/
 
 - name: Import MySQL Repo
-  template: src=mysql-community.repo.jinja2 dest=/etc/yum.repos.d/
+  template: src=mysql-community.repo.jinja2 dest=/etc/yum.repos.d/mysql-community.repo
 
 - name: Install MySQL{{ mysqlver }}
   yum: name=mysql-community-server state=latest
