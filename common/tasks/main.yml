@@ -5,10 +5,13 @@
     yum: name=* state=latest
 
   - name: Install EPEL
-    yum: name=epel-release state=installed
+    template:
+      src: '{{item.src}}'
+      dest: '{{item.dest}}'
+    with_items:
+      - {src: epel.repo.jinja2,dest: /etc/yum.repos.d/epel.repo}
+      - {src: 'RPM-GPG-KEY-EPEL-{{ansible_distribution_version}}',dest: /etc/pki/rpm-gpg/}
 
-  # - name: Install REMI Repo
-  #   yum: name=https://rpms.remirepo.net/enterprise/remi-release-7.rpm
 
   - name: Disable SELinux
     selinux:
