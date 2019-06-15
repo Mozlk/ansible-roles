@@ -24,29 +24,23 @@
 - name: Start MySQL{{mysqlver}} Service
   service: name=mysqld state=started enabled=yes
   
-- name: MySQL{{mysqlver}} password policy
-  lineinfile:
-    path: /etc/my.cnf
-    regexp: '#validate_password = off'
-    line: 'validate_password = off'
+- block:
+  - name: MySQL{{mysqlver}} password policy
+    lineinfile:
+      path: /etc/my.cnf
+      regexp: '#validate_password = off'
+      line: 'validate_password = off'
+
+  - name: Restart MySQL{{mysqlver}} Service
+    service: name=mysqld state=restarted enabled=yes
+    
+  - name: Get temporary MySQL57+ root password
+    shell: grep 'A temporary password is generated for root@localhost:' /var/log/messages | awk '{print $NF}'
+    register: mysql_root_temp_password
+    
+  - name: Change MySQL57+ root user password 
+    shell: mysqladmin -u root --password="{{ mysql_root_temp_password.stdout }}" password "{{mysql_password}}"
   when: (mysqlver == '5.7') or (mysqlver == '8.0')
-
-- name: Restart MySQL{{mysqlver}} Service
-  service: name=mysqld state=restarted enabled=yes
-  when: (mysqlver == '5.7') or (mysqlver == '8.0')
-
- 
-- name: Get temporary MySQL57+ root password
-  shell: grep 'A temporary password is generated for root@localhost:' /var/log/messages | awk '{print $NF}'
-  register: mysql_root_temp_password
-  when: (mysqlver == '5.7') or (mysqlver == '8.0')
-
-
-- name: Change MySQL57+ root user password 
-  shell: mysqladmin -u root --password="{{ mysql_root_temp_password.stdout }}" password "{{mysql_password}}"
-  when: (mysqlver == '5.7') or (mysqlver == '8.0')
-
-
 
 
 - name: Change MySQL{{ mysqlver }} root user password 
