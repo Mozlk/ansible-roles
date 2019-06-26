@@ -1,3 +1,41 @@
+
+- name: judge a file or dir is exits
+  shell: ls /root/init.sh
+  ignore_errors: True
+  register: result
+
+- block:
+  - name: Upload init script
+    copy: 
+      src: init.sh
+      dest: /root/init.sh
+
+  - name: Setting Startup
+    lineinfile:
+      path: /etc/rc.d/rc.local
+      regexp: '/root/init.sh'
+      line: '/root/init.sh'
+      mode: 0750
+    when: ansible_distribution == 'CentOS'
+
+  - block:
+    - name: Setting rc.local
+      file:
+        path: /etc/rc.local
+        state: touch
+        mode: 0750
+
+    - name: Write rc.local
+      shell: echo "#!/bin/bash" > /etc/rc.local
+
+    - name: restart rc.local
+      service: name=rc.local state=restarted enabled=yes
+
+    when: ansible_distribution == 'Ubuntu'
+  when: result|failed
+
+
+
 - name: Remove SSH info
   file: 
     path: '{{item}}'
@@ -5,3 +43,7 @@
   with_items:
     - /home/{{remote_user}}/.ssh
     - /root/.ssh
+  
+- debug: var={{item}}
+  with_items:
+    - mysql_version

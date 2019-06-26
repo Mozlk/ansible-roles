@@ -1,14 +1,16 @@
 ---
-
-- name: Import MySQL GPG Key
-  copy: src=RPM-GPG-KEY-mysql dest=/etc/pki/rpm-gpg/
+# SELECT User,Host,Password FROM mysql.user;
 
 - name: Import MySQL Repo
-  template: src=mysql-community.repo.jinja2 dest=/etc/yum.repos.d/mysql-community.repo
+  template:
+    src: '{{item.src}}'
+    dest: '{{item.dest}}'
+  with_items:
+    - {src: mysql-community.repo.jinja2,dest: /etc/yum.repos.d/mysql-community.repo}
+    - {src: RPM-GPG-KEY-mysql,dest: /etc/pki/rpm-gpg/}
 
 - name: Install MySQL{{ mysqlver }}
   yum: name=mysql-community-server state=latest
-
 
 - name: Create Databases Directory
   file:
@@ -25,23 +27,14 @@
   service: name=mysqld state=started enabled=yes
   
 - block:
-  - name: MySQL{{mysqlver}} password policy
-    lineinfile:
-      path: /etc/my.cnf
-      regexp: '#validate_password = off'
-      line: 'validate_password = off'
-
-  - name: Restart MySQL{{mysqlver}} Service
-    service: name=mysqld state=restarted enabled=yes
-    
   - name: Get temporary MySQL57+ root password
     shell: grep 'A temporary password is generated for root@localhost:' /var/log/messages | awk '{print $NF}'
     register: mysql_root_temp_password
     
   - name: Change MySQL57+ root user password 
     shell: mysqladmin -u root --password="{{ mysql_root_temp_password.stdout }}" password "{{mysql_password}}"
-  when: (mysqlver == '5.7') or (mysqlver == '8.0')
 
+  when: (mysqlver == '5.7') or (mysqlver == '8.0')
 
 - name: Change MySQL{{ mysqlver }} root user password 
   mysql_user: 
@@ -53,7 +46,6 @@
     - ::1
     - localhost
   when: (mysqlver == '5.5') or (mysqlver == '5.6')
-
 
 
 - name: Removes all anyelse user accounts
@@ -81,15 +73,27 @@
 - name: FLUSH PRIVILEGES
   command: mysql -uroot -p{{mysql_password}} -e "FLUSH PRIVILEGES"
 
+- block:
+  - name: enable remote access
+    mysql_user: 
+      login_user: root 
+      login_password: "{{mysql_password}}"
+      name: root
+      host: '%'
+      password: "{{mysql_password}}"
+      priv: '*.*:ALL'
 
-- name: enable remote access
-  mysql_user: 
-    login_user: root 
-    login_password: "{{mysql_password}}"
-    name: root
-    host: '%'
-    password: "{{mysql_password}}"
-    priv: '*.*:ALL'
+  - name: Drop localhost User
+    mysql_user:
+      login_user: root 
+      login_password: "{{mysql_password}}"
+      name: root
+      host: '{{item}}'
+      state: absent
+    with_items:
+      - localhost
+      - 127.0.0.1
+      - ::1
   when: remote 
 
 - name: Create credentials Folder
@@ -97,29 +101,18 @@
     path: /credentials
     state: directory
 
-- name: Create Password doc
-  file:
-    path: /credentials/password.txt
-    mode: 644
-    state: touch
-
 - name: Write Databases Password
-  shell: echo 'Dtabases root Password:'{{mysql_password}}  > /credentials/password.txt
+  template:
+    src: password.txt.jinja2
+    dest: /credentials/password.txt
+    mode: 644
 
 - name: Databases Random Password
-  copy: 
-    src: init-5.7.sh
+  template:
+    src: init.sh.jinja2
     dest: /root/init.sh
     mode: 0750
-  when: (mysqlver == '5.7') or (mysqlver == '8.0')
 
-
-- name: Databases Random Password
-  copy: 
-    src: init-5.6.sh
-    dest: /root/init.sh
-    mode: 0750
-  when: (mysqlver == '5.5') or (mysqlver == '5.6')
 
 - name: Setting Startup
   lineinfile:
@@ -127,3 +120,7 @@
     regexp: '/root/init.sh'
     line: '/root/init.sh'
     mode: 0750
+
+- name: Get MySQL version
+  shell: mysql -V
+  register: mysql_version

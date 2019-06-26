@@ -22,7 +22,7 @@
 
   - name: Install Common Software
     yum: 
-      name: [yum-utils,wget,openssl,unzip,bzip2,expect,at,vim, screen, git, htop, yum-cron,ImageMagick, goaccess,MySQL-python,python-pip]
+      name: [yum-utils,wget,openssl,unzip,bzip2,expect,at,vim, screen,pwgen,git, htop, yum-cron,ImageMagick, goaccess,MySQL-python,python-pip]
       state: installed
     
   - name: Configuration yum-cron
