@@ -1,6 +1,4 @@
 ---
-# SELECT User,Host,Password FROM mysql.user;
-
 - name: Import MySQL Repo
   template:
     src: '{{item.src}}'
@@ -34,7 +32,7 @@
   - name: Change MySQL57+ root user password 
     shell: mysqladmin -u root --password="{{ mysql_root_temp_password.stdout }}" password "{{mysql_password}}"
 
-  when: (mysqlver == '5.7') or (mysqlver == '8.0')
+  when: (mysqlver == 5.7) or (mysqlver == 8.0) or (mysqlver == '5.7') or (mysqlver == '8.0')
 
 - name: Change MySQL{{ mysqlver }} root user password 
   mysql_user: 
@@ -45,7 +43,7 @@
     - 127.0.0.1
     - ::1
     - localhost
-  when: (mysqlver == '5.5') or (mysqlver == '5.6')
+  when: (mysqlver == 5.5) or (mysqlver == 5.6) or (mysqlver == '5.5') or (mysqlver == '5.6')
 
 
 - name: Removes all anyelse user accounts

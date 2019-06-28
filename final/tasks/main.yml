@@ -32,18 +32,18 @@
       service: name=rc.local state=restarted enabled=yes
 
     when: ansible_distribution == 'Ubuntu'
-  when: result|failed
+  when: result is failed
 
 
 
-- name: Remove SSH info
-  file: 
-    path: '{{item}}'
-    state: absent
-  with_items:
-    - /home/{{remote_user}}/.ssh
-    - /root/.ssh
+# - name: Remove SSH info
+#   file: 
+#     path: '{{item}}'
+#     state: absent
+#   with_items:
+#     - /home/{{remote_user}}/.ssh
+#     - /root/.ssh
   
-- debug: var={{item}}
+- debug: msg={{item}}
   with_items:
-    - mysql_version
+    - '{{mysql_version.stdout}}'
