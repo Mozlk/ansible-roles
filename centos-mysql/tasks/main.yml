@@ -105,20 +105,3 @@
     dest: /credentials/password.txt
     mode: 644
 
-- name: Databases Random Password
-  template:
-    src: init.sh.jinja2
-    dest: /root/init.sh
-    mode: 0750
-
-
-- name: Setting Startup
-  lineinfile:
-    path: /etc/rc.d/rc.local
-    regexp: '/root/init.sh'
-    line: '/root/init.sh'
-    mode: 0750
-
-- name: Get MySQL version
-  shell: mysql -V
-  register: mysql_version
