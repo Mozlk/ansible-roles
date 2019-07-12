@@ -4,4 +4,3 @@
   apt:
     name: [nginx,certbot,python-certbot-nginx]
 
----
