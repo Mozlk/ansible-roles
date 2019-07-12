@@ -1,3 +1,8 @@
 ---
-import_tasks: "{{ansible_distribution}}.yml"
+- import_tasks: "{{ansible_distribution}}.yml"
 
+- name: Start Nginx
+  service:
+    name: nginx
+    state: restarted
+    enabled: yes
