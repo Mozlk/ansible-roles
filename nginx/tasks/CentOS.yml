@@ -27,5 +27,5 @@
   ignore_errors: yes
 
 - pip:
-  name: [requests==2.6.0,urllib3]
-  extra_args: --upgrade --force-reinstall
+    name: [requests==2.6.0,urllib3]
+    extra_args: --upgrade --force-reinstall
