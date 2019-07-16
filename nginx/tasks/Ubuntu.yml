@@ -5,7 +5,7 @@
 
 - name: Import Nginx Official Repo
   apt_repository:
-    repo: deb http://nginx.org/packages/ubuntu {{ansible_distribution_release}} nginx"
+    repo: deb http://nginx.org/packages/ubuntu {{ansible_distribution_release}} nginx
     filename: nginx
     update_cache: yes
 
