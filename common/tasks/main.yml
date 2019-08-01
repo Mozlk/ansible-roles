@@ -103,14 +103,28 @@
     name: fs.inotify.max_user_watches
     value: "262144"
 
-- name: AWS Configure
-  apt:
-    name: ec2-instance-connect
-    update_cache: yes
+- block:
+  - name: AWS Configure
+    apt:
+      name: ec2-instance-connect
+      update_cache: yes
+
+  - name: Start ec2-instance-connect
+    service:
+      name: ec2-instance-connect
+      state: started
+      enable: yes
   when: cloud == 'aws' and ansible_distribution == 'Ubuntu'
 
-- name: AWS Configure
-  yum:
-    name: ec2-instance-connect
+- block:
+  - name: AWS Configure
+    yum:
+      name: ec2-instance-connect
+  
+  - name: Start ec2-instance-connect
+    service:
+      name: ec2-instance-connect
+      state: started
+      enable: yes
 
   when: cloud == 'aws' and ansible_distribution == 'Centos'
