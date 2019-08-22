@@ -19,7 +19,12 @@
   
 - name: Copy MySQL{{mysqlver}} Configuration
   template: src=my.cnf.jinja2 dest=/etc/my.cnf
-  notify: restart MySQL
+
+- name: Restart MySQL{{mysqlver}}
+  service:
+    name: mysqld
+    state: restarted
+    enabled: yes
 
 - name: Start MySQL{{mysqlver}} Service
   service: name=mysqld state=started enabled=yes
