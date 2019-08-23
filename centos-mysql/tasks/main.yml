@@ -8,7 +8,8 @@
     - {src: RPM-GPG-KEY-mysql,dest: /etc/pki/rpm-gpg/}
 
 - name: Install MySQL{{ mysqlver }}
-  yum: name=mysql-community-server state=latest
+  yum: 
+    name: [mysql-community-server,MySQL-python]
 
 - name: Create Databases Directory
   file:
@@ -26,18 +27,24 @@
     state: restarted
     enabled: yes
 
-- name: Start MySQL{{mysqlver}} Service
-  service: name=mysqld state=started enabled=yes
-  
 - block:
   - name: Get temporary MySQL57+ root password
     shell: grep 'A temporary password is generated for root@localhost:' /var/log/messages | awk '{print $NF}'
     register: mysql_root_temp_password
     
+  - name: Disable  validate password plugin
+    lineinfile:
+      dest: /etc/my.cnf
+      regexp: '#validate_password=OFF' 
+      line: 'validate_password=OFF'
+
+  - name: Restart MySQL{{mysqlver}} Service
+    service: name=mysqld state=restarted enabled=yes
+
   - name: Change MySQL57+ root user password 
     shell: mysqladmin -u root --password="{{ mysql_root_temp_password.stdout }}" password "{{mysql_password}}"
 
-  when: (mysqlver == 5.7) or (mysqlver == 8.0) or (mysqlver == '5.7') or (mysqlver == '8.0')
+  when: (mysqlver == 5.7) or (mysqlver == '5.7') or (mysqlver == 8.0) or (mysqlver == '8.0')
 
 - name: Change MySQL{{ mysqlver }} root user password 
   mysql_user: 
@@ -45,10 +52,10 @@
     host: "{{ item }}" 
     password: "{{mysql_password}}"
   with_items:
+    - localhost
     - 127.0.0.1
     - ::1
-    - localhost
-  when: (mysqlver == 5.5) or (mysqlver == 5.6) or (mysqlver == '5.5') or (mysqlver == '5.6')
+  when: (mysqlver == 5.5) or (mysqlver == '5.5') or (mysqlver == 5.6) or (mysqlver == '5.6')
 
 
 - name: Removes all anyelse user accounts
@@ -76,28 +83,6 @@
 - name: FLUSH PRIVILEGES
   command: mysql -uroot -p{{mysql_password}} -e "FLUSH PRIVILEGES"
 
-- block:
-  - name: enable remote access
-    mysql_user: 
-      login_user: root 
-      login_password: "{{mysql_password}}"
-      name: root
-      host: '%'
-      password: "{{mysql_password}}"
-      priv: '*.*:ALL'
-
-  - name: Drop localhost User
-    mysql_user:
-      login_user: root 
-      login_password: "{{mysql_password}}"
-      name: root
-      host: '{{item}}'
-      state: absent
-    with_items:
-      - localhost
-      - 127.0.0.1
-      - ::1
-  when: remote 
 
 - name: Create credentials Folder
   file:
