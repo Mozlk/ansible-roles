@@ -29,7 +29,7 @@
 
 - block:
   - name: Get temporary MySQL57+ root password
-    shell: grep 'A temporary password is generated for root@localhost:' /var/log/messages | awk '{print $NF}'
+    shell: grep 'A temporary password is generated for root@localhost:' /var/log/messages | awk '{print $NF}'| tail -n1
     register: mysql_root_temp_password
     
   - name: Disable  validate password plugin
@@ -52,9 +52,9 @@
     host: "{{ item }}" 
     password: "{{mysql_password}}"
   with_items:
-    - localhost
     - 127.0.0.1
     - ::1
+    - localhost
   when: (mysqlver == 5.5) or (mysqlver == '5.5') or (mysqlver == 5.6) or (mysqlver == '5.6')
 
 
