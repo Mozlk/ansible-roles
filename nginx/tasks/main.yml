@@ -9,3 +9,8 @@
     name: nginx
     state: restarted
     enabled: yes
+
+- name: Check Nginx Version
+  shell: nginx -V
+  register: nginx_ver
+  notify: Nginx Version
