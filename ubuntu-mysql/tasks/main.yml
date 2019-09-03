@@ -57,3 +57,8 @@
     src: password.txt.jinja2
     dest: /credentials/password.txt
     mode: 644
+
+- name: Check MySQL Version
+  shell: mysql -V
+  register: mysql_ver
+  notify: MySQL Version

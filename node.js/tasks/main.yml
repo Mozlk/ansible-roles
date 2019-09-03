@@ -8,3 +8,4 @@
 - name: Check Node.js Version
   shell: node -v
   register: node_ver
+  notify: Node.js Version

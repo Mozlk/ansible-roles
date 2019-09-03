@@ -44,3 +44,7 @@
     enabled: yes
     state: restarted
       
+- name: Check Docker Version
+  shell: docker -v
+  register: docker_ver
+  notify: Docker Version

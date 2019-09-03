@@ -4,6 +4,13 @@
 - import_tasks: Ubuntu.yml
   when: ansible_distribution == 'Ubuntu'
 
+
+- name: Configure Nginx
+  copy:
+    src: nginx.conf
+    dest: /etc/nginx/
+
+
 - name: Start Nginx
   service:
     name: nginx
@@ -11,6 +18,6 @@
     enabled: yes
 
 - name: Check Nginx Version
-  shell: nginx -V
+  shell: nginx -v
   register: nginx_ver
   notify: Nginx Version
