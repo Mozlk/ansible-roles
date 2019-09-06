@@ -1,6 +1,11 @@
+- name: install the IUS rpm from a remote repo
+  yum:
+    name: https://rhel7.iuscommunity.org/ius-release.rpm
+    state: present
+
 - name: Install Apache
   yum:
-    name: [httpd,mod_ssl]
+    name: [httpd24u,httpd24u-mod_ssl]
 
 - name: Install Certbot
   yum:
@@ -15,7 +20,7 @@
 - name: Configure Apache
   copy:
     src: httpd.conf
-    dest: /etc/httpd/
+    dest: /etc/httpd/conf/
 
 - name: Create default Directory
   file:
@@ -26,6 +31,11 @@
     - cert 
     - logs
     - config/apache
+
+- name: Create Vhost Configure Directory
+  file:
+    path: /etc/httpd/vhost
+    state: directory
 
 - name: Create a Apache Log symbolic link
   file:
@@ -46,11 +56,6 @@
   with_items:
     - wwwroot
     - cert 
-
-- name: Create Vhost Configure Directory
-  file:
-    path: /etc/httpd/vhost
-    state: directory
 
 
 - name: Start Apache
