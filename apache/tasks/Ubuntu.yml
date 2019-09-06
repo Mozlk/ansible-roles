@@ -1,15 +1,14 @@
-- name: System update
-  apt:
-    name: "*"
-    state: latest
-
 - name: Install apache2
   apt:
-    name: [apache2, certbot]
-  
-- pip:
-    name: [requests==2.6.0,urllib3]
-    extra_args: --upgrade --force-reinstall
+    name: [apache2]
+
+- name: Import Certbot PPA
+  apt_repository:
+    repo: ppa:certbot/certbot
+
+- name: Install Certbot
+  apt: 
+    name: [certbot,python-certbot-apache]
 
 - name: Create default Directory
   file:
@@ -28,9 +27,7 @@
     state: link
   with_items:
     - {src: /var/log/apache2,dest: /data/logs/apache2}  # Apache 日志软连接
-    - {src: /etc/apache2/sites-available,dest: /data/config/apache2/sites-available} # Apache 虚拟主机配置软连接
     - {src: /etc/apache2/sites-enabled,dest: /data/config/apache2/sites-enabled}    # Apache 虚拟主机配置软连接
-    - {src: /etc/apache2/mods-available,dest: /data/config/apache2/mods-available} # Apache 模块配置软连接
     - {src: /etc/apache2/mods-enabled,dest: /data/config/apache2/mods-enabled}  # Apache 模块配置软连接
 
 - name: Change Directory Owner
