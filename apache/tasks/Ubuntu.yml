@@ -22,8 +22,8 @@
     state: link
   with_items:
     - {src: /var/log/apache2,dest: /data/logs/apache2}  # Apache 日志软连接
-    - {src: /etc/apache2/sites-enabled,dest: /data/config/apache2/sites-enabled}    # Apache 虚拟主机配置软连接
-    - {src: /etc/apache2/mods-enabled,dest: /data/config/apache2/mods-enabled}  # Apache 模块配置软连接
+    - {src: /etc/apache2/sites-enabled,dest: /data/config/apache/sites-enabled}    # Apache 虚拟主机配置软连接
+    - {src: /etc/apache2/mods-enabled,dest: /data/config/apache/mods-enabled}  # Apache 模块配置软连接
 
 - name: Change Directory Owner
   file:

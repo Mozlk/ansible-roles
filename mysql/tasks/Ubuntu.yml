@@ -54,4 +54,4 @@
     state: link
   with_items:
     - {src: '/etc/mysql/mysql.conf.d/mysqld.cnf',dest: /data/config/mysqld.cnf}  
-    - {src: '/var/log/mysqld.log',dest: '/data/logs/mysqld.log'}
+    - {src: '/var/log/mysql',dest: '/data/logs/mysqld'}
