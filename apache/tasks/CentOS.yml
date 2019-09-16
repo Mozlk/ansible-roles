@@ -24,13 +24,8 @@
 
 - name: Create default Directory
   file:
-    path: /data/{{item}}
+    path: /data/config/apache
     state: directory
-  with_items:
-    - wwwroot
-    - cert 
-    - logs
-    - config/apache
 
 - name: Create Vhost Configure Directory
   file:

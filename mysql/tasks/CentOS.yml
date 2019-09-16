@@ -1,4 +1,4 @@
----
+
 - name: Import MySQL Repo
   template:
     src: '{{item.src}}'
@@ -84,7 +84,6 @@
   command: mysql -uroot -p{{mysql_password}} -e "FLUSH PRIVILEGES"
 
 
-
 - name: Create a MySQL  symbolic link
   file:
     src: '{{item.src}}'
@@ -93,22 +92,3 @@
   with_items:
     - {src: '/etc/my.ini',dest: /data/config/my.ini}  
     - {src: '/var/log/mysqld.log',dest: '/data/logs/mysqld.log'}
-
-
-
-
-- name: Create credentials Folder
-  file:
-    path: /credentials
-    state: directory
-
-- name: Write Databases Password
-  template:
-    src: password.txt.jinja2
-    dest: /credentials/password.txt
-    mode: 644
-
-- name: Check MySQL Version
-  shell: mysql -V
-  register: mysql_ver
-  notify: MySQL Version

@@ -130,3 +130,12 @@
       enabled: yes
 
   when: cloud == 'aws' and ansible_distribution == 'Centos'
+
+- name: Create Dir
+  file:
+    path: '/data/{{item}}'
+    state: directory
+  with_items:
+    - logs
+    - config
+    - cert

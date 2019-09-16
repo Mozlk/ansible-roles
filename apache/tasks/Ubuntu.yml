@@ -12,13 +12,8 @@
 
 - name: Create default Directory
   file:
-    path: /data/{{item}}
+    path: /data/config/apache
     state: directory
-  with_items:
-    - wwwroot
-    - cert 
-    - logs
-    - config/apache2
 
 - name: Create a Apache Log symbolic link
   file:
