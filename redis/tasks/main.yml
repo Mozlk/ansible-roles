@@ -24,7 +24,18 @@
   with_items:
     - {src:  /var/log/redis,dest: /data/logs/redis} 
     - {src:  /etc/redis,dest: /data/config/redis} 
+  when: ansible_distribution == 'Ubuntu'
 
+
+- name: Create a redis symbolic link
+  file:
+    src: '{{item.src}}'
+    dest: '{{item.dest}}'
+    state: link
+  with_items:
+    - {src:  /var/log/redis,dest: /data/logs/redis} 
+    - {src:  /etc/redis.conf,dest: /data/config/redis.conf} 
+  when: ansible_distribution == 'CentOS'
 
 
 - name: Check redis Version

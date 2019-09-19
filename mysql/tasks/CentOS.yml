@@ -90,5 +90,5 @@
     dest: '{{item.dest}}'
     state: link
   with_items:
-    - {src: '/etc/my.ini',dest: /data/config/my.ini}  
+    - {src: '/etc/my.cnf',dest: /data/config/my.cnf}  
     - {src: '/var/log/mysqld.log',dest: '/data/logs/mysqld.log'}

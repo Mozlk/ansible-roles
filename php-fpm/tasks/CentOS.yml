@@ -62,4 +62,4 @@
   with_items:
     - {src: '/etc/php.ini',dest: /data/config/php/php.ini}  
     - {src: '/etc/php-fpm.d/www.conf',dest: /data/config/php/php-fpm.conf} 
-    - {src: '/var/logs/php-fpm',dest: '/data/logs/php-fpm'}
+    - {src: '/var/log/php-fpm',dest: '/data/logs/php-fpm'}

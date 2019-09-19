@@ -1,6 +1,6 @@
 [mysqld]
 datadir=/data/mysql
-socket=/var/lib/mysql/mysql.sock
+socket=/data/mysql/mysql.sock
 {% if mysqlver == 5.7 or mysqlver == '5.7' %}
 #validate_password=OFF
 {% endif %}

@@ -33,34 +33,6 @@
     enabled: yes
     state: restarted
 
-
-- name: Change MariaDB root user password 
-  mysql_user: 
-    name: root 
-    host: localhost
-    password: "{{mariadb_password}}"
-
-- name: Removes all anyelse user accounts
-  mysql_user:
-    login_user: root
-    login_password: "{{mariadb_password}}"
-    name: ''
-    host_all: yes
-    state: absent
-
-- name: Remove hostname user accounts
-  mysql_user: login_user=root login_password={{mariadb_password}} name='root' host={{ ansible_nodename }} state=absent
-
-- name: Removes test Databases
-  mysql_db:
-    login_user: root
-    login_password: "{{mariadb_password}}"
-    name: test
-    state: absent
-
-- name: Removing privileges on test database
-  command: mysql -uroot -p{{mariadb_password}} -e "DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%'"
-
 - name: del MariaDB Automatically generated for Debian scripts.
   file:
     path: /etc/mysql/debian.cnf
