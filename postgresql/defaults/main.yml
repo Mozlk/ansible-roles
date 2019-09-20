@@ -1,0 +1,2 @@
+postgresqlver: 9.6     # 10.1 10.2 10.3 10.4
+postgresql_password: 123456 #  默认密码

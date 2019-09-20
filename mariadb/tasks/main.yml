@@ -47,4 +47,4 @@
 - name: Check MySQL Version
   shell: mysql -V
   register: mysql_ver
-  notify: MySQL Version
+  notify: MariaDB Version
