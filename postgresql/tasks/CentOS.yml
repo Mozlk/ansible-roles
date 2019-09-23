@@ -3,7 +3,7 @@
     name: https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm
 
 
-- shell: echo "{{postgresqlver}}" | awk '{printf("%.0f\n", 10*$1)}'
+- shell: echo "{{postgresqlver}}" | awk '{ if ($1<10)  printf("%.0f\n", 10*$1); else printf( $0 )}'
   register: psqlver
 
 - name: Install PostgreSQL
@@ -65,5 +65,4 @@
   with_items:
     - {src: '/data/pgsql/pg_hba.conf',dest: /data/config/postgresql/pg_hba.conf}
     - {src: '/data/pgsql/pg_ident.conf',dest: /data/config/postgresql/pg_ident.conf}
-    - {src: '/data/pgsql/postgresql.auto.conf',dest: /data/config/postgresql/postgresql.auto.conf}
     - {src: '/data/pgsql/postgresql.conf',dest: /data/config/postgresql/postgresql.conf}
