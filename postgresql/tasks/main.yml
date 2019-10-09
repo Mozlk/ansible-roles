@@ -15,21 +15,16 @@
     dest: /credentials/password.txt
     mode: 644
 
+
+- name: populate service facts
+  service_facts:
+
 - name: Check PostgreSQL Version
   shell: psql -V
   register: postgresql_ver
-  notify: PostgreSQL Version
+  notify: [PostgreSQL Version,Check Server]
 
 
-# Check
-- name: Check Server
-  debug:
-    var: ansible_facts.services['postgresql-{{ postgresqlver }}']
-  when: ansible_distribution == 'CentOS'
 
-- name: Check Server
-  debug:
-    var: ansible_facts.services['postgresql@{{postgresqlver}}-main.service']
-  when: ansible_distribution == 'Ubuntu'
 
 

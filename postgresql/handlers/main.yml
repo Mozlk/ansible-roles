@@ -1,3 +1,10 @@
 - name: PostgreSQL Version
   debug:
     var: postgresql_ver.stdout
+
+
+- name: Check Server
+  debug:
+    var: ansible_facts.services['postgresql.service']
+
+

@@ -8,8 +8,12 @@
 
 - name: Install PostgreSQL
   yum: 
-    name: ["postgresql{{psqlver.stdout}}","postgresql{{psqlver.stdout}}-server",python-psycopg2]
+    name: ["postgresql{{psqlver.stdout}}","postgresql{{psqlver.stdout}}-server"]
     state: latest
+
+- name: Install psycopg2
+  pip:
+    name: psycopg2-binary
 
 - name: Create Databases Directory
   file:
@@ -40,8 +44,14 @@
       line: "host    all             all             127.0.0.1/32            md5"
       state: present
 
+- name: PostgreSQL Service symbolic link
+  file:
+    src: /usr/lib/systemd/system/postgresql-{{ postgresqlver }}.service
+    dest: /usr/lib/systemd/system/postgresql.service
+    state: link
+
 - name: Start PostgreSQL Service
-  service: name=postgresql-{{ postgresqlver }} state=started enabled=yes
+  service: name=postgresql state=started enabled=yes
 
 - name: Change postgresql password
   become: yes
