@@ -10,4 +10,4 @@
 
 - name: Check PostgreSQL Server for Ubuntu
   debug:
-    var: ansible_facts.services['postgresql.service']
+    var: ansible_facts.services['postgresql@{{postgresqlver}}-main.service']

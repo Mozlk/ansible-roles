@@ -62,3 +62,12 @@
   with_items:
     - {src: '/etc/postgresql/{{postgresqlver}}/main',dest: /data/config/postgresql}
     - {src: '/var/log/postgresql',dest: /data/logs/postgresql}
+
+
+- name: populate service facts
+  service_facts:
+
+- name: Check PostgreSQL
+  shell: psql -V
+  register: postgresql_ver
+  notify: [PostgreSQL Version,Check PostgreSQL Server for Ubuntu]
