@@ -1,16 +1,36 @@
 # PostgrepSQL 开启远程
-- name: enable PostgrepSQL Remote connection I
-  copy:
-    src: pg_hba.conf
-    dest: /data/pgsql
+- block: # Centos
+  - name: enable PostgrepSQL Remote connection I
+    copy:
+      src: pg_hba.conf
+      dest: /data/pgsql
 
-- name: enable PostgrepSQL Remote connection II
-  copy:
-    src: postgresql.conf
-    dest: /data/pgsql
-  
-- name: Restarted PostgrepSQL
-  shell: systemctl restart postgresql-*
+  - name: enable PostgrepSQL Remote connection II
+    copy:
+      src: postgresql.conf
+      dest: /data/pgsql
+    
+  - name: Start PostgreSQL Service
+    service: name=postgresql-{{postgresqlver}} state=restarted enabled=yes
+  when: ansible_distribution == 'CentOS'
+
+- block: # Ubuntu
+  - name: enable PostgrepSQL Remote connection I
+    copy:
+      src: pg_hba.conf
+      dest: /etc/postgresql/{{postgresqlver}}/main/
+
+  - name: enable PostgrepSQL Remote connection II
+    lineinfile:
+      dest: /etc/postgresql/{{postgresqlver}}/main/postgresql.conf
+      regexp: "#listen_addresses = 'localhost'"
+      line: "listen_addresses = '*'"
+      state: present
+    
+  - name: Start PostgreSQL Service
+    service: name=postgresql@{{postgresqlver}}-main.service state=restarted enabled=yes
+  when: ansible_distribution == 'Ubuntu'
+
 
 #### 创建PostgrepSQL容器
 
@@ -23,4 +43,4 @@
   register: gateway
 
 - name: Create a PostgrepSQL container
-  shell: docker run --name phpmyadmin -d -e PHP_PG_ADMIN_SERVER_HOST={{gateway.stdout}} -p 9090:80 --restart=always dockage/phppgadmin
+  shell: docker run --name phppgadmin -d -e PHP_PG_ADMIN_SERVER_HOST={{gateway.stdout}} -p 9090:80 --restart=always dockage/phppgadmin
