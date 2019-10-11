@@ -23,7 +23,7 @@
 - name: Change postgresql databases directory
   lineinfile:
       dest: /etc/postgresql/{{postgresqlver}}/main/postgresql.conf
-      regexp: "data_directory = '/var/lib/postgresql/10/main'"
+      regexp: "data_directory = '/var/lib/postgresql/{{postgresqlver}}/main'"
       line: "data_directory = '/data/pgsql'"
       state: present
 
