@@ -45,7 +45,7 @@
       state: present
 
 - name: Start PostgreSQL Service
-  service: name=postgresql state=started enabled=yes
+  service: name=postgresql-{{ postgresqlver }} state=started enabled=yes
 
 - name: Change postgresql password
   become: yes
