@@ -1,11 +1,5 @@
 [mysqld]
 datadir=/data/mysql
-{% if ansible_distribution == 'Ubuntu' %}
-socket=/data/mysql/mysql.sock
-{% endif %}
-{% if ansible_distribution == 'Centos' %}
-socket=/var/lib/mysql/mysql.sock
-{% endif %}
 default-storage-engine=INNODB
 character-set-server=utf8
 collation-server=utf8_general_ci

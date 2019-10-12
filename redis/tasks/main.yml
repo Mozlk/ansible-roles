@@ -1,19 +1,25 @@
-- name: Install redis
-  apt: 
-    name: redis
-  when: ansible_distribution == 'Ubuntu'
 
-- name: Install redis
-  yum: 
-    name: redis
-  when: ansible_distribution == 'CentOS'
 
-  
-- name: Start redis
-  service:
-    name: redis
-    enabled: yes
-    state: restarted
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 - name: Create a redis symbolic link
