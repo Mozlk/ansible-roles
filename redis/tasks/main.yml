@@ -59,6 +59,9 @@
     - {src:  /var/log/redis.log,dest: /data/logs/redis.log} 
     - {src:  /etc/redis,dest: /data/config/redis} 
 
+- name: populate service facts
+  service_facts:
+
 - name: Check redis Version
   shell: /usr/local/bin/redis-server -v
   register: redis_ver
