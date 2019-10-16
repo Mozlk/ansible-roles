@@ -64,4 +64,4 @@
   register: redis_ver
   args:
     executable: /bin/bash
-  notify: redis Version
+  notify: [redis Version,Check redis Server]

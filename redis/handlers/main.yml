@@ -2,3 +2,6 @@
   debug:
     var: redis_ver.stdout
 
+- name: Check redis Server
+  debug:
+    var: ansible_facts.services['redis.service']
