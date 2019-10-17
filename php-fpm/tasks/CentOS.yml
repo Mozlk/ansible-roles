@@ -10,14 +10,14 @@
 
 - name: Install PHP{{ phpversion.stdout }}
   yum: 
-    name: ['php{{ phpversion.stdout }}w','php{{ phpversion.stdout }}w-fpm','php{{ phpversion.stdout }}w-pecl-imagick','php{{ phpversion.stdout }}w-common ','php{{ phpversion.stdout }}w-gd ','php{{ phpversion.stdout }}w-mbstring' ,'php{{ phpversion.stdout }}w-mcrypt' ,'php{{ phpversion.stdout }}w-devel' ,'php{{ phpversion.stdout }}w-xml' ,'php{{ phpversion.stdout }}w-pdo' ,'php{{ phpversion.stdout }}w-bcmath','php{{ phpversion.stdout }}w-pear','php{{ phpversion.stdout }}w-opcache','php{{ phpversion.stdout }}w-ldap','php{{ phpversion.stdout }}w-odbc','php{{ phpversion.stdout }}w-xmlrpc','php{{ phpversion.stdout }}w-json','php{{ phpversion.stdout }}w-mysqlnd','php{{ phpversion.stdout }}w-pdo','php{{ phpversion.stdout }}w-pdo_dblib','php{{ phpversion.stdout }}w-recode','php{{ phpversion.stdout }}w-snmp','php{{ phpversion.stdout }}w-soap','php{{ phpversion.stdout }}w-pecl-zip','php{{ phpversion.stdout }}w-curl','php{{ phpversion.stdout }}w-imap','php{{ phpversion.stdout }}w-pecl-redis'] 
+    name: ['php{{ phpversion.stdout }}w-fpm','php{{ phpversion.stdout }}w-pecl-imagick','php{{ phpversion.stdout }}w-common ','php{{ phpversion.stdout }}w-gd ','php{{ phpversion.stdout }}w-mbstring' ,'php{{ phpversion.stdout }}w-mcrypt' ,'php{{ phpversion.stdout }}w-devel' ,'php{{ phpversion.stdout }}w-xml' ,'php{{ phpversion.stdout }}w-pdo' ,'php{{ phpversion.stdout }}w-bcmath','php{{ phpversion.stdout }}w-pear','php{{ phpversion.stdout }}w-opcache','php{{ phpversion.stdout }}w-ldap','php{{ phpversion.stdout }}w-odbc','php{{ phpversion.stdout }}w-xmlrpc','php{{ phpversion.stdout }}w-json','php{{ phpversion.stdout }}w-mysqlnd','php{{ phpversion.stdout }}w-pdo','php{{ phpversion.stdout }}w-pdo_dblib','php{{ phpversion.stdout }}w-recode','php{{ phpversion.stdout }}w-snmp','php{{ phpversion.stdout }}w-soap','php{{ phpversion.stdout }}w-pecl-zip','php{{ phpversion.stdout }}w-curl','php{{ phpversion.stdout }}w-imap','php{{ phpversion.stdout }}w-pecl-redis'] 
     state: present
   when: phpver < 7.1
 
 
 - name: Install PHP{{ phpversion.stdout }}
   yum: 
-    name: ['php{{ phpversion.stdout }}w','php{{ phpversion.stdout }}w-fpm','php{{ phpversion.stdout }}w-pecl-imagick','php{{ phpversion.stdout }}w-common ','php{{ phpversion.stdout }}w-gd ','php{{ phpversion.stdout }}w-mbstring' ,'php{{ phpversion.stdout }}w-devel' ,'php{{ phpversion.stdout }}w-xml' ,'php{{ phpversion.stdout }}w-pdo' ,'php{{ phpversion.stdout }}w-bcmath','php{{ phpversion.stdout }}w-pear','php{{ phpversion.stdout }}w-opcache','php{{ phpversion.stdout }}w-ldap','php{{ phpversion.stdout }}w-odbc','php{{ phpversion.stdout }}w-xmlrpc','php{{ phpversion.stdout }}w-json','php{{ phpversion.stdout }}w-mysqlnd','php{{ phpversion.stdout }}w-pdo','php{{ phpversion.stdout }}w-pdo_dblib','php{{ phpversion.stdout }}w-recode','php{{ phpversion.stdout }}w-snmp','php{{ phpversion.stdout }}w-soap','php{{ phpversion.stdout }}w-pecl-zip','php{{ phpversion.stdout }}w-curl','php{{ phpversion.stdout }}w-imap','php{{ phpversion.stdout }}w-pecl-redis'] 
+    name: ['php{{ phpversion.stdout }}w-fpm','php{{ phpversion.stdout }}w-pecl-imagick','php{{ phpversion.stdout }}w-common ','php{{ phpversion.stdout }}w-gd ','php{{ phpversion.stdout }}w-mbstring' ,'php{{ phpversion.stdout }}w-devel' ,'php{{ phpversion.stdout }}w-xml' ,'php{{ phpversion.stdout }}w-pdo' ,'php{{ phpversion.stdout }}w-bcmath','php{{ phpversion.stdout }}w-pear','php{{ phpversion.stdout }}w-opcache','php{{ phpversion.stdout }}w-ldap','php{{ phpversion.stdout }}w-odbc','php{{ phpversion.stdout }}w-xmlrpc','php{{ phpversion.stdout }}w-json','php{{ phpversion.stdout }}w-mysqlnd','php{{ phpversion.stdout }}w-pdo','php{{ phpversion.stdout }}w-pdo_dblib','php{{ phpversion.stdout }}w-recode','php{{ phpversion.stdout }}w-snmp','php{{ phpversion.stdout }}w-soap','php{{ phpversion.stdout }}w-pecl-zip','php{{ phpversion.stdout }}w-curl','php{{ phpversion.stdout }}w-imap','php{{ phpversion.stdout }}w-pecl-redis'] 
     state: present
   when: phpver >= 7.1
 
@@ -34,8 +34,8 @@
 
 
 - name: Configure PHP-FPM
-  copy:
-    src: www-centos.conf
+  template:
+    src: www-centos.jinja2
     dest: /etc/php-fpm.d/www.conf
 
 - name: Restart PHP-FPM
@@ -59,3 +59,36 @@
     - {src: '/etc/php.ini',dest: /data/config/php/php.ini}  
     - {src: '/etc/php-fpm.d/www.conf',dest: /data/config/php/php-fpm.conf} 
     - {src: '/var/log/php-fpm',dest: '/data/logs/php-fpm'}
+
+- block: # Apache
+  - name: Support PHP for Apache
+    copy:
+      src: apache-php.conf
+      dest: /etc/httpd/conf.d/php.conf
+
+
+  - name: Set DirectoryIndex 
+    lineinfile:
+      dest: /etc/httpd/conf/httpd.conf
+      regexp: '    DirectoryIndex index.html'
+      line: "    DirectoryIndex index.html index.php"
+      state: present
+
+  - name: Restart Apache
+    service:
+      name: httpd
+      state: restarted
+
+  when: http_type.stdout == 'apache'
+
+
+# - block: # nginx
+#   - name: Support PHP for nginx
+#     copy:
+#       src: apache-php.conf
+#       dest: /etc/httpd/conf.d/php.conf
+#     when: http_type.stdout == nginx
+
+
+- name: TEST phpinfo
+  shell: echo "<?php phpinfo(); ?>" > /var/www/html/index.php
