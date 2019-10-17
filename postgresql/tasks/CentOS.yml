@@ -71,9 +71,6 @@
     - {src: '/data/pgsql/pg_ident.conf',dest: /data/config/postgresql/pg_ident.conf}
     - {src: '/data/pgsql/postgresql.conf',dest: /data/config/postgresql/postgresql.conf}
 
-- name: populate service facts
-  service_facts:
-
 - name: Check PostgreSQL
   shell: psql -V
   register: postgresql_ver

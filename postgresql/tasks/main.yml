@@ -15,7 +15,8 @@
     dest: /credentials/password.txt
     mode: 644
 
-
+- name: populate service facts
+  service_facts:
 
 
 
