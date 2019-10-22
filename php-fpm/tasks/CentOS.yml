@@ -33,10 +33,10 @@
     dest: /etc/php.ini
 
 
-- name: Configure PHP-FPM
-  template:
-    src: www-centos.jinja2
-    dest: /etc/php-fpm.d/www.conf
+# - name: Configure PHP-FPM
+#   template:
+#     src: www-centos.jinja2
+#     dest: /etc/php-fpm.d/www.conf
 
 - name: Restart PHP-FPM
   service:
