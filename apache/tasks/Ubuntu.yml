@@ -35,6 +35,11 @@
     - wwwroot
     - cert
 
+- name: Configure Apache
+  copy:
+    src: apache2.conf
+    dest: /etc/apache2/
+
 - name: Start Apache
   service:
     name: apache2
