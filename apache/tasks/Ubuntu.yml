@@ -49,5 +49,5 @@
 
 - name: Check Apache Version
   shell: apache2 -v
-  register: apache_ver
+  register: ubuntu_apache_ver
   notify: Apache-ubuntu Version
