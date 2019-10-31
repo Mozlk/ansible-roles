@@ -20,9 +20,9 @@
     selinux:
       state: disabled
 
-  - name:  temporarily disable Selinux
-    shell: setenforce 0 
-    ignore_errors: yes
+  # - name:  temporarily disable Selinux
+  #   shell: setenforce 0 
+  #   ignore_errors: yes
 
   - name: Install Common Software
     yum: 
